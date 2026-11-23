@@ -25,12 +25,27 @@ export default function App() {
 
   useEffect(() => {
     if (!user) return;
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const socket = new WebSocket(`${protocol}//${window.location.host}/ws?token=${encodeURIComponent(session.get() ?? '')}`);
-    socket.onopen = () => setConnected(true);
-    socket.onclose = () => setConnected(false);
-    socket.onmessage = () => refreshTasks().catch(() => undefined);
-    return () => socket.close();
+    let active = true;
+    let socket: WebSocket | undefined;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
+    function connect() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      socket = new WebSocket(`${protocol}//${window.location.host}/ws?token=${encodeURIComponent(session.get() ?? '')}`);
+      socket.onopen = () => setConnected(true);
+      socket.onmessage = () => refreshTasks().catch(() => undefined);
+      socket.onclose = () => {
+        setConnected(false);
+        if (active) retryTimer = setTimeout(connect, 2_000);
+      };
+    }
+
+    connect();
+    return () => {
+      active = false;
+      clearTimeout(retryTimer);
+      socket?.close();
+    };
   }, [user, refreshTasks]);
 
   async function authenticate(mode: 'login' | 'register', input: { name: string; email: string; password: string }) {
