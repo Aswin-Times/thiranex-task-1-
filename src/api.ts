@@ -1,6 +1,7 @@
 import type { Task, TaskInput, User } from './types';
 
 const TOKEN_KEY = 'taskflow_token';
+const API_ORIGIN = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 export const session = {
   get: () => localStorage.getItem(TOKEN_KEY),
@@ -10,7 +11,7 @@ export const session = {
 
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = session.get();
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${API_ORIGIN}/api${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',

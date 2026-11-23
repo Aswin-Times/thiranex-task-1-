@@ -30,8 +30,10 @@ export default function App() {
     let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
     function connect() {
+      const configuredUrl = import.meta.env.VITE_WS_URL?.replace(/\/$/, '');
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      socket = new WebSocket(`${protocol}//${window.location.host}/ws?token=${encodeURIComponent(session.get() ?? '')}`);
+      const webSocketOrigin = configuredUrl || `${protocol}//${window.location.host}`;
+      socket = new WebSocket(`${webSocketOrigin}/ws?token=${encodeURIComponent(session.get() ?? '')}`);
       socket.onopen = () => setConnected(true);
       socket.onmessage = () => refreshTasks().catch(() => undefined);
       socket.onclose = () => {

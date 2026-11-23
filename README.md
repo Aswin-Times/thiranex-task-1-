@@ -46,6 +46,8 @@ On Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`.
 | `JWT_SECRET` | Production | Local development value | Secret used to sign sessions |
 | `CLIENT_ORIGIN` | No | Any origin | Allowed frontend origin |
 | `DATABASE_FILE` | No | `server/data/db.json` | Persistent datastore path |
+| `VITE_API_URL` | Vercel frontend | Same origin | Public Render origin, such as `https://taskflow-thiranex.onrender.com` |
+| `VITE_WS_URL` | Vercel frontend | Same origin | Public Render WebSocket origin, such as `wss://taskflow-thiranex.onrender.com` |
 
 Always provide a long, random `JWT_SECRET` in production. Runtime data is intentionally excluded from Git.
 
