@@ -19,7 +19,7 @@ const app = createApp({
 if (process.env.NODE_ENV === 'production') {
   const clientPath = resolve('dist');
   app.use(express.static(clientPath));
-  app.get('*', (_request, response) => response.sendFile(resolve(clientPath, 'index.html')));
+  app.use((_request, response) => response.sendFile(resolve(clientPath, 'index.html')));
 }
 
 const server = createServer(app);
